@@ -1,7 +1,7 @@
 import json
 import time
-import urllib.request
 import urllib.error
+import urllib.request
 
 BASE_URL = "http://127.0.0.1:8001"
 

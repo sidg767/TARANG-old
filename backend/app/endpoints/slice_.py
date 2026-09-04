@@ -13,10 +13,13 @@ Query params:
 """
 
 from __future__ import annotations
+
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
 import logging
+from concurrent.futures import ThreadPoolExecutor
+
 from fastapi import APIRouter, HTTPException, Query, Request
+
 from backend.app.cache import TTL_SLICE
 from backend.app.endpoints.binary import make_binary_response, parse_bbox
 

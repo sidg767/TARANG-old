@@ -199,7 +199,7 @@ async def water_masses(
         result = await loop.run_in_executor(None, compute)
     except HTTPException:
         raise
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         logger.exception("water_masses failed")
         raise HTTPException(500, f"water-mass classification failed: {e}")
     return JSONResponse(result)

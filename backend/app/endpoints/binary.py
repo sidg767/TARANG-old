@@ -16,10 +16,10 @@ NEVER return numeric grids as JSON arrays. (§8.6, §20 Rule 3)
 from __future__ import annotations
 
 import struct
+
 import numpy as np
 import orjson
 from fastapi import Response
-
 
 CONTENT_TYPE = "application/octet-stream"
 

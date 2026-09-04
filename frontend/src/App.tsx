@@ -41,6 +41,7 @@ export default function App() {
   const uiMode = useTarangStore(s => s.uiMode)
   const renderMode = useTarangStore(s => s.renderMode)
   const activeSourceId = useTarangStore(s => s.activeSourceId)
+  const setShowHomeOverlay = useTarangStore(s => s.setShowHomeOverlay)
 
   const setSources = useTarangStore(s => s.setSources)
   const setDepthLevels = useTarangStore(s => s.setDepthLevels)
@@ -252,7 +253,10 @@ export default function App() {
       {showGetStarted ? (
         <GetStarted
           onBack={() => setShowGetStarted(false)}
-          onStartExploring={() => setShowGetStarted(false)}
+          onStartExploring={() => {
+            setShowGetStarted(false)
+            setShowHomeOverlay(false)
+          }}
         />
       ) : (
         <HomeOverlay

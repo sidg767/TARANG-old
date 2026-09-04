@@ -281,88 +281,6 @@ export function HomeOverlay({
     >
 
       {/* ═══════════════════════════════════
-          GET STARTED BUTTON
-          ═══════════════════════════════════ */}
-
-      <button
-        onClick={onGetStarted}
-        style={{
-          position: 'fixed',
-
-          top: '20px',
-          right: '105px',
-
-          zIndex: 10000,
-
-          padding: '10px 20px',
-
-          border:
-            '1px solid rgba(0, 215, 255, 0.55)',
-
-          borderRadius: '999px',
-
-          background:
-            'rgba(2, 18, 35, 0.78)',
-
-          color: '#e9fbff',
-
-          fontSize: '12px',
-
-          fontWeight: 700,
-
-          letterSpacing: '1px',
-
-          cursor: 'pointer',
-
-          backdropFilter: 'blur(12px)',
-
-          boxShadow:
-            '0 0 18px rgba(0, 200, 255, 0.15)',
-
-          transition:
-            'all 0.25s ease',
-        }}
-
-        onMouseOver={e => {
-
-          e.currentTarget.style.transform =
-            'translateY(-2px)'
-
-          e.currentTarget.style.color =
-            '#ffffff'
-
-          e.currentTarget.style.borderColor =
-            '#00ddff'
-
-          e.currentTarget.style.background =
-            'rgba(0, 45, 70, 0.92)'
-
-          e.currentTarget.style.boxShadow =
-            '0 0 28px rgba(0, 210, 255, 0.35)'
-        }}
-
-        onMouseOut={e => {
-
-          e.currentTarget.style.transform =
-            'translateY(0)'
-
-          e.currentTarget.style.color =
-            '#e9fbff'
-
-          e.currentTarget.style.borderColor =
-            'rgba(0, 215, 255, 0.55)'
-
-          e.currentTarget.style.background =
-            'rgba(2, 18, 35, 0.78)'
-
-          e.currentTarget.style.boxShadow =
-            '0 0 18px rgba(0, 200, 255, 0.15)'
-        }}
-      >
-        ✦ GET STARTED
-      </button>
-
-      {/* ═══════════════════════════════════
           MAIN CONTENT
           ═══════════════════════════════════ */}
 
@@ -669,6 +587,40 @@ export function HomeOverlay({
           )}
 
         </div>
+
+        <button
+          onClick={onGetStarted}
+          style={{
+            padding: '10px 20px',
+            border: '1px solid rgba(0, 215, 255, 0.55)',
+            borderRadius: '999px',
+            background: 'rgba(2, 18, 35, 0.78)',
+            color: '#e9fbff',
+            fontSize: '12px',
+            fontWeight: 700,
+            letterSpacing: '1px',
+            cursor: 'pointer',
+            backdropFilter: 'blur(12px)',
+            boxShadow: '0 0 18px rgba(0, 200, 255, 0.15)',
+            transition: 'all 0.25s ease',
+          }}
+          onMouseOver={e => {
+            e.currentTarget.style.transform = 'translateY(-2px)'
+            e.currentTarget.style.color = '#ffffff'
+            e.currentTarget.style.borderColor = '#00ddff'
+            e.currentTarget.style.background = 'rgba(0, 45, 70, 0.92)'
+            e.currentTarget.style.boxShadow = '0 0 28px rgba(0, 210, 255, 0.35)'
+          }}
+          onMouseOut={e => {
+            e.currentTarget.style.transform = 'translateY(0)'
+            e.currentTarget.style.color = '#e9fbff'
+            e.currentTarget.style.borderColor = 'rgba(0, 215, 255, 0.55)'
+            e.currentTarget.style.background = 'rgba(2, 18, 35, 0.78)'
+            e.currentTarget.style.boxShadow = '0 0 18px rgba(0, 200, 255, 0.15)'
+          }}
+        >
+          ✦ GET STARTED
+        </button>
 
         {/* ───────────────────────────────
             Feature cards

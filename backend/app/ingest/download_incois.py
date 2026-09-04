@@ -23,11 +23,12 @@ Demo day: run this the morning of, THEN set OFFLINE_MODE=true — offline mode t
 that day's real INCOIS forecast from the local cache.
 """
 from __future__ import annotations
+
 import os
-import sys
 import re
-import urllib.request
 import ssl
+import sys
+import urllib.request
 from pathlib import Path
 
 import numpy as np

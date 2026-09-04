@@ -19,25 +19,43 @@ AI Copilot:
   Provides Gemini-powered natural-language assistance for TARANG.
 """
 
-from contextlib import asynccontextmanager
 import logging
 import os
+from contextlib import asynccontextmanager
 
 # Loads .env into os.environ if present — docker-compose substitutes .env values itself, but
 # nothing did this for a plain `uvicorn backend.app.main:app` run outside Docker, so
 # COPERNICUS_USERNAME/PASSWORD (and anything else in .env.example) were silently ignored unless
 # exported into the shell by hand. python-dotenv is already a pinned dependency for exactly this.
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from backend.app.registry.loader import RegistryLoader
 from backend.app.cache import RedisCache
 from backend.app.db import Database
-from backend.app.endpoints import metadata, slice_, volume, isosurface, instruments, profile, eddy, delta, metrics, preview, registry as registry_endpoint, copilot, ogc, upload, derived
+from backend.app.endpoints import (
+    copilot,
+    delta,
+    derived,
+    eddy,
+    instruments,
+    isosurface,
+    metadata,
+    metrics,
+    ogc,
+    preview,
+    profile,
+    slice_,
+    upload,
+    volume,
+)
+from backend.app.endpoints import registry as registry_endpoint
+from backend.app.registry.loader import RegistryLoader
+
 logger = logging.getLogger("tarang")
 
 logging.basicConfig(
@@ -418,7 +436,7 @@ app.include_router(
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Option B: hand-rolled OGC endpoints (PS requirement)
-from backend.app.wms_wcs import wms, wcs
+from backend.app.wms_wcs import wcs, wms
 
 app.include_router(
     wms.router,

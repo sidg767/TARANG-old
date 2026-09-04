@@ -8,6 +8,7 @@ guessing why a request is slow or fast.
 """
 
 from __future__ import annotations
+
 from fastapi import APIRouter, Request
 
 router = APIRouter(tags=["system"])

@@ -1,9 +1,11 @@
 from __future__ import annotations
+
 import asyncio
 import logging
-from fastapi import APIRouter, Query, Request, HTTPException
-from fastapi.responses import JSONResponse
+
 import numpy as np
+from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
 
 from backend.app.endpoints.binary import parse_bbox
 
@@ -55,9 +57,13 @@ async def get_delta(
             raise ValueError(f"Source {source} is neither temperature nor salinity")
 
         # Import the profile loader to fetch observation profiles
-        from backend.app.endpoints.profile import _load_from_local_cache, _argo_cache_lock
         import glob
         import os
+
+        from backend.app.endpoints.profile import (
+            _argo_cache_lock,
+            _load_from_local_cache,
+        )
         
         data_dir = os.getenv("DATA_DIR", "data")
         cache_files = sorted(

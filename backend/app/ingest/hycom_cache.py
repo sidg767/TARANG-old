@@ -9,7 +9,6 @@ HYCOM has documented transient outages during refresh windows (§7, §17).
 """
 
 import logging
-import os
 from pathlib import Path
 
 import xarray as xr
