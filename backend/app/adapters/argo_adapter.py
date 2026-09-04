@@ -7,11 +7,12 @@ but this adapter provides the metadata.
 """
 
 from __future__ import annotations
+
 import logging
-from pathlib import Path
 
 import xarray as xr
-from backend.app.adapters.base import DataSourceAdapter, CFMetadata, SliceResult, VolumeResult
+
+from backend.app.adapters.base import DataSourceAdapter, SliceResult, VolumeResult
 
 logger = logging.getLogger("tarang.adapters.argo")
 

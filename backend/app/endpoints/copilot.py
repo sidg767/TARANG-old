@@ -1,11 +1,11 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
-from openai import AsyncOpenAI
-from dotenv import load_dotenv
-import os
 import json
+import os
 import re
 
+from dotenv import load_dotenv
+from fastapi import APIRouter, HTTPException
+from openai import AsyncOpenAI
+from pydantic import BaseModel, Field
 
 # ============================================================
 # LOAD ENVIRONMENT VARIABLES
@@ -565,7 +565,7 @@ async def ask_openrouter(query: str) -> dict:
 
         raise HTTPException(
             status_code=502,
-            detail=f"OpenRouter request failed: {str(e)}"
+            detail=f"OpenRouter request failed: {e!s}"
         )
 
     if not response.choices:

@@ -12,7 +12,6 @@ argopy 1.4.0 — Python >= 3.11 required
 argopy incompatible with xarray 2024.3.0–2025.6.1 — pin xarray >= 2025.7.0
 """
 
-import asyncio
 import logging
 import os
 from pathlib import Path
@@ -40,7 +39,6 @@ REGIONS = {
 
 def fetch_argo_region(region_name: str, config: dict) -> None:
     """Fetch Argo data for a region and save to local NetCDF using direct ERDDAP URL."""
-    import urllib.request
     
     out_path = Path(config["output_file"])
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -89,8 +87,8 @@ def ingest_to_postgis(nc_path: str, db_url: str) -> None:
     Load Argo positions from the cached NetCDF into PostGIS.
     Called after fetch_argo_region() completes.
     """
-    import xarray as xr
     import psycopg2
+    import xarray as xr
 
     if not Path(nc_path).exists():
         logger.warning(f"NetCDF not found at {nc_path} — skipping PostGIS ingest")

@@ -7,11 +7,14 @@ Cached in Redis for 1 hour (metadata rarely changes).
 """
 
 from __future__ import annotations
-import logging
+
 import asyncio
+import logging
 from concurrent.futures import ThreadPoolExecutor
-from fastapi import APIRouter, HTTPException, Request, Query
+
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
+
 from backend.app.cache import TTL_METADATA
 
 logger = logging.getLogger("tarang.api.metadata")
@@ -54,9 +57,9 @@ async def get_metadata(source: str, request: Request):
     cache_key = cache.metadata_key(source)
 
     async def compute():
-        import orjson
-        import asyncio
         import logging
+
+        import orjson
         logger = logging.getLogger("tarang.api.metadata")
         logger.info(f"--> compute() started for {source}")
         loop = asyncio.get_running_loop()

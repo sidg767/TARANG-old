@@ -3,19 +3,21 @@ GET /api/eddy?source=&time=&bbox=&threshold=
 GET /api/front?source=&var=&time=&bbox=&threshold=
 """
 from __future__ import annotations
+
 import asyncio
 import logging
+
+import numpy as np
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
-import numpy as np
 
-from backend.app.endpoints.binary import parse_bbox
 # netCDF4/HDF5 isn't thread-safe for concurrent access to the process-wide cached file handle
 # (see the long note on _NETCDF_IO_LOCK in netcdf_adapter). get_slice/get_volume already hold it;
 # eddy/front open + read the same files in their own executor thread, so without taking the same
 # lock a Volume-workspace burst (volume + slice + eddy + front all at once) raises "NetCDF: HDF
 # error". Reuse the adapter's lock so all NetCDF I/O in the process serialises through one gate.
 from backend.app.adapters.netcdf_adapter import _NETCDF_IO_LOCK
+from backend.app.endpoints.binary import parse_bbox
 
 logger = logging.getLogger("tarang.endpoint.eddy")
 router = APIRouter(tags=["analytics"])

@@ -137,7 +137,7 @@ class DelimitedTextAdapter(DataSourceAdapter):
         time_range = {}
         if "time" in ds.coords:
             times = ds["time"].values
-            time_range = {"start": str(times[0]), "end": str(times[-1]), "steps": int(len(times))}
+            time_range = {"start": str(times[0]), "end": str(times[-1]), "steps": len(times)}
 
         return {
             "source_id": self.manifest["id"],

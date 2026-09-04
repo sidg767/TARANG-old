@@ -9,9 +9,12 @@ fetch (/api/slice) is still in flight.
 """
 
 from __future__ import annotations
+
 import asyncio
 import logging
+
 from fastapi import APIRouter, HTTPException, Query, Request, Response
+
 from backend.app.endpoints.binary import make_binary_response
 
 logger = logging.getLogger("tarang.endpoint.preview")

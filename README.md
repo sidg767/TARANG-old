@@ -430,6 +430,23 @@ depth_levels: [0, 2, 4, 6, 8, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50,
 
 Adding a new sensor = adding a new YAML file + a catalog entry (Option A) or a Zarr path (Option B). **No frontend or backend code changes required** - this is the claim you prove live.
 
+For a sensor that needs custom ingestion logic, add an adapter plugin without changing the
+registry loader. A plugin module can expose a `register_plugin(register_adapter)` function and
+register one or more `DataSourceAdapter` subclasses:
+
+```python
+from backend.app.plugins import register_adapter
+
+def register_plugin(register=register_adapter):
+    register("MySensorAdapter", MySensorAdapter)
+```
+
+Load local plugin modules with a comma-separated `TARANG_PLUGIN_MODULES` environment variable.
+Packaged integrations can instead publish Python entry points in the `tarang.adapters` group;
+the entry point may resolve to an adapter class, a `{name: class}` mapping, or a registration
+function. The YAML `adapter` value is the only connection to the rest of the API, so metadata,
+slice, volume, WMS, and WCS routes remain unchanged.
+
 ---
 
 ## 10. Frontend / Component Architecture

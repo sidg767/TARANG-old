@@ -11,6 +11,7 @@ Faster, resolves topological ambiguity, returns verts/faces/normals/values.
 """
 
 from __future__ import annotations
+
 import asyncio
 import logging
 import struct
@@ -18,6 +19,7 @@ import struct
 import numpy as np
 import orjson
 from fastapi import APIRouter, HTTPException, Query, Request, Response
+
 from backend.app.cache import TTL_ISOSURFACE
 from backend.app.endpoints.binary import parse_bbox
 
@@ -42,8 +44,8 @@ def _build_isosurface_binary(
     Header contains:
       n_verts, n_faces, variable, units, threshold, time, ...
     """
-    header["n_verts"]  = int(len(verts))
-    header["n_faces"]  = int(len(faces))
+    header["n_verts"]  = len(verts)
+    header["n_faces"]  = len(faces)
     header["dtype_verts"]  = "float32"
     header["dtype_faces"]  = "uint32"
 
@@ -84,6 +86,7 @@ async def get_isosurface(
 
     async def compute() -> bytes:
         from skimage import measure
+
         from backend.app.endpoints.volume import _data_executor
 
         loop = asyncio.get_running_loop()

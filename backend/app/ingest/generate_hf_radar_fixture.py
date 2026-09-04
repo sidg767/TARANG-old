@@ -22,10 +22,11 @@ functions (not random noise) so the field looks like an actual current system, n
 """
 
 import os
-import numpy as np
-import netCDF4 as nc
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+import netCDF4 as nc
+import numpy as np
 
 OUT_DIR = Path(os.getenv("DATA_DIR", "data")) / "netcdf"
 OUT_DIR.mkdir(parents=True, exist_ok=True)

@@ -28,7 +28,11 @@ from pathlib import Path
 import numpy as np
 import xarray as xr
 
-from backend.app.adapters.base import DataSourceAdapter, CFMetadata, SliceResult, VolumeResult
+from backend.app.adapters.base import (
+    DataSourceAdapter,
+    SliceResult,
+    VolumeResult,
+)
 
 logger = logging.getLogger("tarang.adapters.netcdf")
 
@@ -442,7 +446,7 @@ class NetCDFAdapter(DataSourceAdapter):
                     time_range = {
                         "start": str(times[0]),
                         "end":   str(times[-1]),
-                        "steps": int(len(times)),
+                        "steps": len(times),
                     }
 
                 return {

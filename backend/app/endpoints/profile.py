@@ -13,9 +13,11 @@ Uses argopy 1.4.0 — pin carefully (§6, §15):
 """
 
 from __future__ import annotations
+
 import asyncio
 import logging
 import threading
+
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
 
@@ -156,7 +158,7 @@ async def get_profile(
         logger.error(f"Profile fetch failed for {platform_id}: {e}")
         return JSONResponse(
             status_code=404,
-            content={"error": f"Profile not found for platform {platform_id}: {str(e)}"}
+            content={"error": f"Profile not found for platform {platform_id}: {e!s}"}
         )
 
     if isinstance(profile_data, dict):
@@ -292,7 +294,6 @@ def _extract_profile_rows(ds, cache_path: str, platform_id: str) -> dict:
 
 def _load_from_argopy(platform_id: str) -> dict:
     """Live argopy fetch — fallback only, never called during demo."""
-    import argopy
     from argopy import DataFetcher as ArgoDataFetcher
 
     loader = ArgoDataFetcher(src="gdac").float(int(platform_id))

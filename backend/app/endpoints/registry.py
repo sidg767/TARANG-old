@@ -14,6 +14,7 @@ demonstrating the "extensible design" without any code changes.
 """
 
 from __future__ import annotations
+
 import asyncio
 import logging
 

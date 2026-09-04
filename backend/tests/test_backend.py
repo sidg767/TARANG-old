@@ -12,11 +12,9 @@ Tests:
   6. Binary response header is valid JSON with required fields
 """
 
-import io
 import json
 import struct
 import sys
-import os
 from pathlib import Path
 
 import numpy as np
@@ -84,6 +82,24 @@ def test_registry_loads(tmp_path):
     ids = list(loader.manifest_ids())
     assert len(ids) >= 1, "Expected at least one manifest"
     assert "hycom_water_temp" in ids, "hycom_water_temp manifest missing"
+
+
+def test_external_adapter_plugin_is_used_by_registry(tmp_path):
+    """A registered sensor plugin should work through YAML without core edits."""
+    from backend.app.adapters import DelimitedTextAdapter
+    from backend.app.plugins import register_adapter
+    from backend.app.registry.loader import RegistryLoader
+
+    register_adapter("TestSensorAdapter", DelimitedTextAdapter)
+    (tmp_path / "sensor.yaml").write_text(
+        "id: sensor\nadapter: TestSensorAdapter\nsource: sensor.csv\nvariable: temperature\n"
+    )
+
+    loader = RegistryLoader(str(tmp_path))
+    loader.load_all()
+
+    assert list(loader.manifest_ids()) == ["sensor"]
+    assert isinstance(loader.get_adapter("sensor"), DelimitedTextAdapter)
 
 
 # ── Adapter tests ─────────────────────────────────────────────────────────────
@@ -173,7 +189,7 @@ def test_binary_response_format():
 
     # Parse header length
     header_len = struct.unpack("<I", buf[:4])[0]
-    parsed_header = json.loads(buf[4:4+header_len])
+    parsed_header = json.loads(bytes(buf[4:4+header_len]))
     body = np.frombuffer(buf[4+header_len:], dtype=np.float32)
 
     assert parsed_header["variable"] == "water_temp"
@@ -188,9 +204,9 @@ def test_binary_response_format():
 @pytest.fixture
 def app_client(fixture_nc_path):
     """Create a test client with the fixture dataset registered, bypassing lifespan."""
-    from fastapi.testclient import TestClient
+    from backend.app.main import app  # noqa: I001
     from backend.app.registry.loader import RegistryLoader
-    from backend.app.main import app
+    from fastapi.testclient import TestClient
 
     # Build a minimal registry pointing at the fixture
     manifest = {
@@ -208,8 +224,8 @@ def app_client(fixture_nc_path):
     registry._adapters  = {"fixture_temp": adapter}
     registry.manifest_ids   = lambda: iter(registry._manifests.keys())
     registry.all_manifests  = lambda: list(registry._manifests.values())
-    registry.get_adapter    = lambda id: registry._adapters[id]
-    registry.get_manifest   = lambda id: registry._manifests[id]
+    registry.get_adapter    = lambda manifest_id: registry._adapters[manifest_id]
+    registry.get_manifest   = lambda manifest_id: registry._manifests[manifest_id]
 
     # No-op cache (no Redis needed in tests)
     class NoopCache:
@@ -235,10 +251,9 @@ def app_client(fixture_nc_path):
     patcher1.start()
 
     with TestClient(app, raise_server_exceptions=True) as client:
-        # Override state again just to be safe
-        client.app.state.registry = registry
-        client.app.state.cache    = NoopCache()
-        client.app.state.db       = None
+        app.state.registry = registry
+        app.state.cache = NoopCache()
+        app.state.db = None
         yield client
 
     patcher1.stop()
@@ -320,6 +335,7 @@ def test_ogc_endpoints_directory(app_client):
 def test_registry_reload_never_wipes(tmp_path, monkeypatch):
     """A reload that transiently reads 0 manifests must keep the existing set."""
     import pathlib
+
     from backend.app.registry.loader import RegistryLoader
 
     (tmp_path / "s.yaml").write_text(
@@ -338,6 +354,7 @@ def test_registry_reload_never_wipes(tmp_path, monkeypatch):
 def test_delimited_text_depth_time(tmp_path):
     """DelimitedTextAdapter builds a (time, depth, lat, lon) cube from a long CSV."""
     import pandas as pd
+
     from backend.app.adapters.delimited_text_adapter import DelimitedTextAdapter
 
     rows = []
@@ -393,10 +410,10 @@ def test_adcp_mooring_profiles(tmp_path, monkeypatch):
 
 def test_registry_upload_netcdf(fixture_nc_path, tmp_path, monkeypatch):
     """Uploading a NetCDF introspects it, writes a manifest, and hot-reloads it in."""
-    from fastapi.testclient import TestClient
-    from backend.app.registry.loader import RegistryLoader
+    from backend.app.endpoints import upload as upload_mod  # noqa: I001
     from backend.app.main import app
-    from backend.app.endpoints import upload as upload_mod
+    from backend.app.registry.loader import RegistryLoader
+    from fastapi.testclient import TestClient
 
     reg_dir = tmp_path / "registry"
     reg_dir.mkdir()
@@ -409,13 +426,13 @@ def test_registry_upload_netcdf(fixture_nc_path, tmp_path, monkeypatch):
     app.state.registry = registry
     app.state.db = None
 
-    with TestClient(app) as client:
-        client.app.state.registry = registry
-        with open(fixture_nc_path, "rb") as fh:
-            r = client.post(
-                "/api/registry/upload",
-                files={"file": ("my_ocean_grid.nc", fh, "application/x-netcdf")},
-            )
+    with TestClient(app) as client, open(fixture_nc_path, "rb") as fh:
+        app.state.registry = registry
+        app.state.db = None
+        r = client.post(
+            "/api/registry/upload",
+            files={"file": ("my_ocean_grid.nc", fh, "application/x-netcdf")},
+        )
     assert r.status_code == 200, r.text
     body = r.json()
     assert body["id"] == "my_ocean_grid"

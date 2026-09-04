@@ -18,12 +18,13 @@ import logging
 import os
 import signal
 import threading
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 import yaml
 
 from backend.app.adapters import ADAPTER_REGISTRY, DataSourceAdapter
+from backend.app.plugins import discover_plugins
 
 logger = logging.getLogger("tarang.registry")
 
@@ -107,6 +108,7 @@ class RegistryLoader:
 
     def _parse_one(self, path: Path) -> tuple[str, dict, DataSourceAdapter]:
         """Parse + validate one YAML manifest. Pure — does not mutate self."""
+        discover_plugins()
         with open(path, "r", encoding="utf-8") as f:
             manifest = yaml.safe_load(f)
 

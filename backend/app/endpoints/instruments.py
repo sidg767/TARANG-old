@@ -5,6 +5,7 @@ Returns instrument positions within a bounding box from PostGIS.
 """
 
 from __future__ import annotations
+
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
 

@@ -26,7 +26,6 @@ from __future__ import annotations
 
 import io
 import logging
-from typing import Optional
 
 import numpy as np
 from fastapi import APIRouter, HTTPException, Query, Request
@@ -173,21 +172,21 @@ async def wms(
     SERVICE: str = Query("WMS"),
     REQUEST: str = Query("GetCapabilities"),
     VERSION: str = Query("1.3.0"),
-    LAYERS: Optional[str] = Query(None),
-    STYLES: Optional[str] = Query(""),
-    CRS: Optional[str] = Query(None),
-    BBOX: Optional[str] = Query(None),
-    WIDTH: Optional[int] = Query(256),
-    HEIGHT: Optional[int] = Query(256),
-    FORMAT: Optional[str] = Query("image/png"),
-    TRANSPARENT: Optional[str] = Query("TRUE"),
-    ELEVATION: Optional[float] = Query(None, description="Depth level in metres (positive-down)"),
-    TIME: Optional[str] = Query(None, description="ISO-8601 time step"),
-    COLORMAP: Optional[str] = Query(None, description="matplotlib colormap name override"),
-    QUERY_LAYERS: Optional[str] = Query(None, description="GetFeatureInfo: layer(s) to query"),
-    INFO_FORMAT: Optional[str] = Query("text/plain", description="GetFeatureInfo response format"),
-    I: Optional[int] = Query(None, description="GetFeatureInfo: pixel column (from left)"),
-    J: Optional[int] = Query(None, description="GetFeatureInfo: pixel row (from top)"),
+    LAYERS: str | None = Query(None),
+    STYLES: str | None = Query(""),
+    CRS: str | None = Query(None),
+    BBOX: str | None = Query(None),
+    WIDTH: int | None = Query(256),
+    HEIGHT: int | None = Query(256),
+    FORMAT: str | None = Query("image/png"),
+    TRANSPARENT: str | None = Query("TRUE"),
+    ELEVATION: float | None = Query(None, description="Depth level in metres (positive-down)"),
+    TIME: str | None = Query(None, description="ISO-8601 time step"),
+    COLORMAP: str | None = Query(None, description="matplotlib colormap name override"),
+    QUERY_LAYERS: str | None = Query(None, description="GetFeatureInfo: layer(s) to query"),
+    INFO_FORMAT: str | None = Query("text/plain", description="GetFeatureInfo response format"),
+    I: int | None = Query(None, description="GetFeatureInfo: pixel column (from left)"),
+    J: int | None = Query(None, description="GetFeatureInfo: pixel row (from top)"),
 ):
     """
     OGC WMS 1.3.0 endpoint.
@@ -288,9 +287,9 @@ async def _get_map(
     bbox_str: str,
     width: int,
     height: int,
-    elevation: Optional[float],
-    time_str: Optional[str],
-    colormap_override: Optional[str],
+    elevation: float | None,
+    time_str: str | None,
+    colormap_override: str | None,
 ) -> Response:
     """
     Render a depth-slice at the requested BBOX/time/elevation as a PNG tile.
@@ -363,7 +362,7 @@ async def _get_feature_info(
     height: int,
     i: int,
     j: int,
-    elevation: Optional[float],
+    elevation: float | None,
     info_format: str,
 ) -> Response:
     """

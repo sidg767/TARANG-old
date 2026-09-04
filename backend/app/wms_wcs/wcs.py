@@ -27,7 +27,6 @@ from __future__ import annotations
 
 import io
 import logging
-from typing import Optional
 
 import numpy as np
 from fastapi import APIRouter, HTTPException, Query, Request
@@ -142,13 +141,13 @@ async def wcs(
     SERVICE: str = Query("WCS"),
     REQUEST: str = Query("GetCapabilities"),
     VERSION: str = Query("2.0.1"),
-    COVERAGEID: Optional[str] = Query(None, alias="COVERAGEID"),
-    SUBSET_time: Optional[str] = Query(None, alias="SUBSET[time]"),
-    SUBSET_depth: Optional[str] = Query(None, alias="SUBSET[depth]"),
-    SUBSET_lat: Optional[str] = Query(None, alias="SUBSET[latitude]"),
-    SUBSET_lon: Optional[str] = Query(None, alias="SUBSET[longitude]"),
-    RANGESUBSET: Optional[str] = Query(None, description="WCS 2.0 range subset — variable/band name to export"),
-    FORMAT: Optional[str] = Query("application/x-netcdf4"),
+    COVERAGEID: str | None = Query(None, alias="COVERAGEID"),
+    SUBSET_time: str | None = Query(None, alias="SUBSET[time]"),
+    SUBSET_depth: str | None = Query(None, alias="SUBSET[depth]"),
+    SUBSET_lat: str | None = Query(None, alias="SUBSET[latitude]"),
+    SUBSET_lon: str | None = Query(None, alias="SUBSET[longitude]"),
+    RANGESUBSET: str | None = Query(None, description="WCS 2.0 range subset — variable/band name to export"),
+    FORMAT: str | None = Query("application/x-netcdf4"),
 ):
     """
     OGC WCS 2.0.1 endpoint.
@@ -222,11 +221,11 @@ async def _describe_coverage(request: Request, coverage_id: str) -> Response:
 async def _get_coverage(
     request: Request,
     coverage_id: str,
-    subset_time: Optional[str],
-    subset_depth: Optional[str],
-    subset_lat: Optional[str],
-    subset_lon: Optional[str],
-    range_subset: Optional[str] = None,
+    subset_time: str | None,
+    subset_depth: str | None,
+    subset_lat: str | None,
+    subset_lon: str | None,
+    range_subset: str | None = None,
 ) -> Response:
     """
     Return a NetCDF4 file subset.
@@ -246,7 +245,7 @@ async def _get_coverage(
         raise HTTPException(404, f"Coverage '{coverage_id}' not found. Available: {list(registry.manifest_ids())}")
 
     # Parse optional index subsets (time/depth) and geographic subsets (lat/lon)
-    def parse_index_range(s: Optional[str]) -> Optional[tuple[int, int]]:
+    def parse_index_range(s: str | None) -> tuple[int, int] | None:
         if s is None:
             return None
         s = s.strip("() ")
@@ -258,7 +257,7 @@ async def _get_coverage(
             return (v, v)
         return None
 
-    def parse_float_range(s: Optional[str]) -> Optional[tuple[float, float]]:
+    def parse_float_range(s: str | None) -> tuple[float, float] | None:
         if s is None:
             return None
         s = s.strip("() ")
@@ -324,7 +323,8 @@ async def _get_coverage(
         import netCDF4 as nc4  # type: ignore
         buf = io.BytesIO()
 
-        import tempfile, os
+        import os
+        import tempfile
         with tempfile.NamedTemporaryFile(suffix=".nc", delete=False) as tmp:
             tmp_path = tmp.name
 
